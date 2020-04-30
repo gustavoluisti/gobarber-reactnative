@@ -50,7 +50,7 @@ const SignUp: React.FC = () => {
                                 icon="lock"
                                 placeholder="Senha"
                             />
-                            <Button onPress={() => {}}>Entrar</Button>
+                            <Button onPress={() => formRef.current?.submitForm()}>Entrar</Button>
                         </Form>
                     </Container>
                 </ScrollView>
