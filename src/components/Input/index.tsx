@@ -38,18 +38,18 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
     const [isFocused, setIsFocused] = useState(false);
     const [isFilled, setIsFilled] = useState(false);
 
-    const handleInputFocus = useCallback(()=>{
+    const handleInputFocus = useCallback(() => {
         setIsFocused(true);
-    },[])
-    const handleInputBlur = useCallback(()=>{
+    }, []);
+    const handleInputBlur = useCallback(() => {
         setIsFocused(false);
 
-        if(inputValueRef.current.value) {
+        if (inputValueRef.current.value) {
             setIsFilled(true);
         } else {
             setIsFilled(false);
         }
-    },[])
+    }, []);
 
     useImperativeHandle(ref, () => ({
         focus() {
@@ -75,7 +75,11 @@ const Input: React.RefForwardingComponent<InputRef, InputProps> = (
 
     return (
         <Container isFocused={isFocused}>
-            <Icon name={icon} size={20} color="#666360" />
+            <Icon
+                name={icon}
+                size={20}
+                color={isFocused || isFilled ? '#ff9000' : '#666360'}
+            />
 
             <TextInput
                 ref={inputElementRef}
