@@ -5,6 +5,7 @@ import {
     Platform,
     View,
     ScrollView,
+    TextInput
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -37,20 +38,42 @@ const SignUp: React.FC = () => {
                         <View>
                             <Title>Crie sua conta</Title>
                         </View>
-                        <Form ref={formRef} onSubmit={(data)=>{console.log(data)}}>
-                            <Input name="name" icon="user" placeholder="Nome" />
+                        <Form
+                            ref={formRef}
+                            onSubmit={(data) => {
+                                console.log(data);
+                            }}
+                        >
+                            <Input
+                                autoCapitalize="words"
+                                name="name"
+                                icon="user"
+                                placeholder="Nome"
+                            />
 
                             <Input
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                autoCorrect={false}
                                 name="email"
                                 icon="mail"
                                 placeholder="E-mail"
+                                returnKeyType="next"
                             />
                             <Input
+                                secureTextEntry
                                 name="password"
                                 icon="lock"
                                 placeholder="Senha"
+                                textContentType="newPassword"
+                                returnKeyType="send"
+                                onSubmitEditing={() => formRef.current?.submitForm()}
                             />
-                            <Button onPress={() => formRef.current?.submitForm()}>Entrar</Button>
+                            <Button
+                                onPress={() => formRef.current?.submitForm()}
+                            >
+                                Entrar
+                            </Button>
                         </Form>
                     </Container>
                 </ScrollView>
