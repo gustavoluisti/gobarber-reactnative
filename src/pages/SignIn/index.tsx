@@ -10,8 +10,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
+
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+
+import { useAuth } from '../../hooks/auth';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
@@ -41,36 +44,43 @@ const Signin: React.FC = () => {
     const passwordInputRef = useRef<TextInput>(null);
     const navigation = useNavigation();
 
-    const handleSignIn = useCallback(async (data: SignInFormData) => {
-        try {
-            formRef.current?.setErrors({});
-            const schema = Yup.object().shape({
-                email: Yup.string()
-                    .required('E-mail obrigatório')
-                    .email('Digite um e-mail válido'),
-                password: Yup.string().required('Senha obrigatória'),
-            });
-            await schema.validate(data, { abortEarly: false });
+    const { signIn, user } = useAuth();
 
-            // await signIn({
-            //     email: data.email,
-            //     password: data.password,
-            // });
-        } catch (err) {
-            if (err instanceof Yup.ValidationError) {
-                const erros = getValidationErrors(err);
+    console.log(user);
 
-                formRef.current?.setErrors(erros);
+    const handleSignIn = useCallback(
+        async (data: SignInFormData) => {
+            try {
+                formRef.current?.setErrors({});
+                const schema = Yup.object().shape({
+                    email: Yup.string()
+                        .required('E-mail obrigatório')
+                        .email('Digite um e-mail válido'),
+                    password: Yup.string().required('Senha obrigatória'),
+                });
+                await schema.validate(data, { abortEarly: false });
 
-                return;
+                await signIn({
+                    email: data.email,
+                    password: data.password,
+                });
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const erros = getValidationErrors(err);
+
+                    formRef.current?.setErrors(erros);
+
+                    return;
+                }
+
+                Alert.alert(
+                    'Erro na autenticação',
+                    'Ocorreu um erro ao fazer login | verifique e-mail e senha',
+                );
             }
-
-            Alert.alert(
-                'Erro na autenticação',
-                'Ocorreu um erro ao fazer login | verifique e-mail e senha',
-            );
-        }
-    }, []);
+        },
+        [signIn],
+    );
 
     return (
         <>

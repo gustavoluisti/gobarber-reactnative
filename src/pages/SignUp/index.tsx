@@ -6,7 +6,7 @@ import {
     View,
     ScrollView,
     TextInput,
-    Alert
+    Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
@@ -15,6 +15,8 @@ import { FormHandles } from '@unform/core';
 
 import Input from '../../components/Input';
 import Button from '../../components/Button';
+
+import { useAuth } from '../../hooks/auth';
 
 import { Container, Title, BackToSignIn, BackToSignInText } from './style';
 
@@ -40,40 +42,47 @@ const SignUp: React.FC = () => {
 
     const handleSignUp = useCallback(
         async (data: SignUpFormData) => {
-        try {
-            formRef.current?.setErrors({});
+            try {
+                formRef.current?.setErrors({});
 
-            const schema = Yup.object().shape({
-                name: Yup.string().required('Nome obrigatório'),
-                email: Yup.string()
-                    .required('E-mail obrigatório')
-                    .email('Digite um e-mail válido'),
-                password: Yup.string().min(6, 'No mínino 6 digitos'),
-            });
+                const schema = Yup.object().shape({
+                    name: Yup.string().required('Nome obrigatório'),
+                    email: Yup.string()
+                        .required('E-mail obrigatório')
+                        .email('Digite um e-mail válido'),
+                    password: Yup.string().min(6, 'No mínino 6 digitos'),
+                });
 
-            await schema.validate(data,
-                { abortEarly: false });
+                await schema.validate(data, { abortEarly: false });
 
-            await api.post('/users', data);
+                await api.post('/users', data);
 
-            Alert.alert('Cadastro realizado com sucesso!',
-            'Você já pode fazer login na aplicação.');
+                console.log(data);
 
-            navigation.goBack();
+                Alert.alert(
+                    'Cadastro realizado com sucesso!',
+                    'Você já pode fazer login na aplicação.',
+                );
 
-        } catch (err) {
-            if (err instanceof Yup.ValidationError) {
-                const erros = getValidationErrors(err);
+                navigation.goBack();
+            } catch (err) {
+                if (err instanceof Yup.ValidationError) {
+                    const erros = getValidationErrors(err);
+                    console.log(erros);
 
-                formRef.current?.setErrors(erros);
+                    formRef.current?.setErrors(erros);
 
-                return;
+                    return;
+                }
+
+                Alert.alert(
+                    'Erro no cadastro',
+                    'Ocorreu um erro ao fazer o cadastro',
+                );
             }
-
-            Alert.alert('Erro no cadastro', 'Ocorreu um erro ao fazer o cadastro');
-
-        }
-    }, []);
+        },
+        [navigation],
+    );
 
     return (
         <>
@@ -91,9 +100,7 @@ const SignUp: React.FC = () => {
                         <View>
                             <Title>Crie sua conta</Title>
                         </View>
-                        <Form
-                            ref={formRef}
-                            onSubmit={handleSignUp}>
+                        <Form ref={formRef} onSubmit={handleSignUp}>
                             <Input
                                 autoCapitalize="words"
                                 name="name"
