@@ -30,6 +30,13 @@ const AuthProvider: React.FC = ({ children }) => {
                 '@GoBarber:user',
             ]);
 
+            // const token = await AsyncStorage.getItem('@GoBarber:token');
+            // const user = await AsyncStorage.getItem('@GoBarber:user');
+
+            // if (token && user) {
+            //     setData({ token, user: JSON.parse(user) });
+            // }
+
             if (token[1] && user[1]) {
                 setData({ token: token[1], user: JSON.parse(user[1]) });
             }
@@ -45,11 +52,14 @@ const AuthProvider: React.FC = ({ children }) => {
         });
 
         const { token, user } = response.data;
-        await AsyncStorage.multiSet([
-            ['@GoBarber:token', token],
-            ['@GoBarber:user', JSON.stringify(user)],
-        ]);
+        // await AsyncStorage.multiSet([
+        //     ['@GoBarber:token', token],
+        //     ['@GoBarber:user', JSON.stringify(user)],
+        // ]);
 
+        await AsyncStorage.setItem('@GoBarber:token', token);
+        await AsyncStorage.setItem('@GoBarber:user', JSON.stringify(user));
+        console.log(token);
         setData({ token, user });
     }, []);
 
